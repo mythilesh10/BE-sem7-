@@ -1,0 +1,88 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import confusion_matrix
+
+df = pd.read_csv("emails.csv")
+df
+
+df.info()
+
+df.describe()
+
+# for null column
+null_counts = df.isnull().sum()
+# Filter columns with more than one null value
+columns_with_nulls = null_counts[null_counts >= 1]
+columns_with_nulls
+
+# Removing Email no. column since it is unncessary
+
+x = df.iloc[:,1:3001]
+x.head()
+
+# Output Class
+
+y = df.iloc[:,-1]
+y.head()
+
+# Splitting the dataset into training and test set
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=.2 ,random_state=12)
+
+x_test
+
+
+# Feature Scaling  
+
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+
+x_train = sc.fit_transform(x_train)
+x_test = sc.fit_transform(x_test)
+
+#Fitting K-NN classifier to the training set  
+
+from sklearn.neighbors import KNeighborsClassifier  
+knn= KNeighborsClassifier(n_neighbors=5, metric='minkowski', p=2 )  
+knn.fit(x_train, y_train) 
+
+y_pred_knn = knn.predict(x_test)
+y_pred_knn
+
+cm = confusion_matrix(y_test, y_pred_knn)
+cm
+
+# Confusion matrix graph using seaborn
+
+sns.heatmap(cm, annot=True, fmt='.2f', cmap='Reds') 
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('Confusion Matrix')
+plt.show()
+
+accuracy_score(y_test, y_pred_knn)
+
+from sklearn.svm import SVC
+svc = SVC(kernel='linear', random_state=0)  
+svc.fit(x_train, y_train)
+
+y_pred_svc = svc.predict(x_test)
+y_pred_svc
+
+cm = confusion_matrix(y_test, y_pred_svc)
+cm
+
+# Confusion matrix graph using seaborn
+sns.heatmap(cm, annot=True, fmt='.2f', cmap='Reds')
+plt.xlabel('Predicted')
+plt.ylabel('True')
+plt.title('Confusion Matrix')
+plt.show()
+
+#accuracy score
+
+accuracy_score(y_test, y_pred_svc)
