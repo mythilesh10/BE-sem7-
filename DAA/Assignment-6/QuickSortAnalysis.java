@@ -1,73 +1,66 @@
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.*;
 
 public class QuickSortAnalysis {
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Enter size of the 1st array : ");
-        int n = sc.nextInt();
-        int arr1[] = new int[n];
-        System.out.println("Enter the numbers: ");
-        for (int i = 0; i < n; i++) {
-            arr1[i] = sc.nextInt();
-        }
-
-        System.out.println("Original Array1: " + Arrays.toString(arr1));
-        quickSort(arr1, 0, arr1.length - 1);
-        System.out.println("Sorted Array (Deterministic): " + Arrays.toString(arr1));
-
-        System.out.println("Enter size for 2nd array: ");
-        int m = sc.nextInt();
-        int[] arr2 = new int[m];
-        for (int i = 0; i < m; i++) {
-            arr2[i] = sc.nextInt();
-        }
-        System.out.println("Original Array2: " + Arrays.toString(arr2));
-        randomizedQuickSort(arr2, 0, arr2.length - 1);
-        System.out.println("Sorted Array (Randomized): " + Arrays.toString(arr2));
-    }
-
-    public static void quickSort(int[] arr, int low, int high) {
-        if (low < high) {
-            int pi = partition(arr, low, high);
-            quickSort(arr, low, pi - 1);
-            quickSort(arr, pi + 1, high);
-        }
-    }
-
-    public static int partition(int[] arr, int low, int high) {
-        int pivot = arr[high];
-        int i = (low - 1);
-        for (int j = low; j < high; j++) {
-            if (arr[j] < pivot) {
+    // Deterministic Quicksort
+    static int partition(List<Integer> arr, int low, int high) {
+        int pivot = arr.get(low);
+        int i = low;
+        int j = high;
+        while (i < j) {
+            while (arr.get(i) <= pivot && i <= high - 1) {
                 i++;
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+            }
+            while (arr.get(j) > pivot && j >= low + 1) {
+                j--;
+            }
+            if (i < j) {
+                int temp = arr.get(i);
+                arr.set(i, arr.get(j));
+                arr.set(j, temp);
             }
         }
-        int temp = arr[i + 1];
-        arr[i + 1] = arr[high];
-        arr[high] = temp;
-        return i + 1;
+        int temp = arr.get(low);
+        arr.set(low, arr.get(j));
+        arr.set(j, temp);
+        return j;
     }
 
-    public static void randomizedQuickSort(int[] arr, int low, int high) {
+    static void qs(List<Integer> arr, int low, int high) {
         if (low < high) {
-            int pi = randomizedPartition(arr, low, high);
-            randomizedQuickSort(arr, low, pi - 1);
-            randomizedQuickSort(arr, pi + 1, high);
+            int pIndex = partition(arr, low, high);
+            qs(arr, low, pIndex - 1);
+            qs(arr, pIndex + 1, high);
         }
     }
 
-    public static int randomizedPartition(int[] arr, int low, int high) {
+    public static List<Integer> deterministicQuickSort(List<Integer> arr) {
+        qs(arr, 0, arr.size() - 1);
+        return arr;
+    }
+
+    // Randomized Quicksort
+    static int randomizedPartition(List<Integer> arr, int low, int high) {
         Random rand = new Random();
         int randomIndex = rand.nextInt(high - low) + low;
-        int temp = arr[randomIndex];
-        arr[randomIndex] = arr[high];
-        arr[high] = temp;
+        int temp = arr.get(randomIndex);
+        arr.set(randomIndex, arr.get(high));
+        arr.set(high, temp);
         return partition(arr, low, high);
+    }
+
+    static void randomizedQs(List<Integer> arr, int low, int high) {
+        if (low < high) {
+            int pIndex = randomizedPartition(arr, low, high);
+            randomizedQs(arr, low, pIndex - 1);
+            randomizedQs(arr, pIndex + 1, high);
+        }
+    }
+
+    public static List<Integer> randomizedQuickSort(List<Integer> arr) {
+        randomizedQs(arr, 0, arr.size() - 1);
+        return arr;
     }
 }
