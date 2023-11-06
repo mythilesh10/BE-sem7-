@@ -1,0 +1,21 @@
+# Define the function
+def function_to_optimize(x):
+    return (x + 3)**2
+
+# Define the derivative (gradient) of the function
+def gradient(x):
+    return 2 * (x + 3)
+
+# Hyperparameters
+learning_rate = 0.1
+iterations = 1000
+x = 2  # Starting point
+
+# Gradient Descent algorithm
+for i in range(iterations):
+    gradient_value = gradient(x)
+    x = x - learning_rate * gradient_value  # Update x
+
+# Print the result
+minima = function_to_optimize(x)
+print(f"Local minimum at x = {round(x)}, y = {round(minima)}")
